@@ -13,9 +13,19 @@ import com.qualcomm.robotcore.util.TypeConversion;
  */
 
 @I2cDeviceType
-@DeviceProperties(name = "VL53L5 ToF Sensor", xmlTag = "VL53L5")
-public class VL53L5CX extends I2cDeviceSynchDevice<I2cDeviceSynch> {
+@DeviceProperties(name = "VL53L5 ToF Sensor", description = "This is the time of flight sensor from STM" ,xmlTag = "VL53L5")
 
+public class VL53L5CX extends I2cDeviceSynchDevice<I2cDeviceSynch> {
+    public enum Register {
+        WRITE(0x52),
+        READ(0x53);
+
+        public int bVal;
+
+        Register(int bVal) {
+            this.bVal = bVal;
+        }
+    }
     public final static I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create8bit(0x52);
 
     @Override
@@ -31,13 +41,11 @@ public class VL53L5CX extends I2cDeviceSynchDevice<I2cDeviceSynch> {
     }
 
     @Override
-    public String getDeviceName()
-    {
+    public String getDeviceName() {
         return "STMicroelectronics VL53L5 ToF Sensor";
     }
 
-    public VL53L5CX(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
-    {
+    public VL53L5CX(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned) {
         super(deviceClient, deviceClientIsOwned);
 
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);
@@ -46,20 +54,9 @@ public class VL53L5CX extends I2cDeviceSynchDevice<I2cDeviceSynch> {
         this.deviceClient.engage();
     }
 
-    public enum Register{
-        WRITE(0x52),
-        READ(0x53);
-
-        public int bVal;
-
-        Register(int bVal)
-        {
-            this.bVal = bVal;
-        }
-    }
 
 
-    protected short read(Register reg){
+    protected short read(Register reg) {
 
         return TypeConversion.byteArrayToShort(deviceClient.read(reg.bVal, 2));
     }
