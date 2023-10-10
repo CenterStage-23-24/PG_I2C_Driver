@@ -78,13 +78,13 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
     @Override
     public Manufacturer getManufacturer()
     {
-        return Manufacturer.Other;
+        return Manufacturer.STMicroelectronics;
     }
 
     @Override
     public String getDeviceName()
     {
-        return "STMicroelectronics_VL53L0X_Range_Sensor";
+        return "STMicroelectronics_VL53L5CX_ToF_Sensor";
     }
 
     // get manufacturer's model ID number.
@@ -121,7 +121,7 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
     public final static I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create8bit(0x52);
 
     // String tag for logging.
-    protected String MYTAG = "STMicroVL53L0X: ";
+    protected String MYTAG = "STMicroVL53L5CX: ";
 
     // The register addresses are listed in the vl53l0x_device.h file that
     // is part of the VL53L0XFoo API.
