@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
+        <LynxModule name="Expansion Hub" port="2">
+            <!--The attribute "name" should be changed to the name of the motor in the code-->
+            <goBILDA5202SeriesMotor name="EM0" port="0" />
+            <goBILDA5202SeriesMotor name="EM1" port="2" />
+            <goBILDA5202SeriesMotor name="EM2" port="3" />
+            <Servo name="ES0" port="0" />
+            <Servo name="ES1" port="2" />
+            <Servo name="ES2" port="4" />
+            <Servo name="ES3" port="5" />
+            <AnalogInput name="EAI1" port="0" />
+            <AnalogInput name="EAI2" port="2" />
+            <RevColorSensorV3 name="ECS1" port="0" bus="1" />
+            <RevColorSensorV3 name="ECS2" port="0" bus="2" />
+        </LynxModule>
+        <LynxModule name="Control Hub" port="173">
+            <!--The attribute "name" should be changed to the name of the motor in the code-->
+            <goBILDA5202SeriesMotor name="CM0" port="0" />
+            <goBILDA5202SeriesMotor name="CM1" port="1" />
+            <goBILDA5202SeriesMotor name="CM2" port="2" />
+            <goBILDA5202SeriesMotor name="CM3" port="3" />
+            <Servo name="CS0" port="0" />
+            <Servo name="CS1" port="1" />
+            <Servo name="CS2" port="2" />
+            <LynxEmbeddedIMU name="imu" port="0" bus="0" /> 
+            <REV_VL53L0X_RANGE_SENSOR name="CDS1" port="0" bus="1" />
+            <REV_VL53L0X_RANGE_SENSOR name="CDS2" port="0" bus="2" />
+        </LynxModule>
+    </LynxUsbDevice>
+    <Webcam name="Webcam 1" serialNumber="B1A51920" /> 
+    <!-- The serial number here will be different. To figure this out you need to go to the Driver Station app-->
+</Robot>
