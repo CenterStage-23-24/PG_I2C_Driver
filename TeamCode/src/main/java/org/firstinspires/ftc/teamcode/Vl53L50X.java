@@ -532,7 +532,7 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
 
 
         // set timeout period (milliseconds)
-        setTimeout(200);
+        setTimeout();
 
         // Start continuous back-to-back mode (take readings as
         // fast as possible).  To use continuous timed mode
@@ -606,7 +606,7 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
         //  *count = tmp & 0x7f;
         //  *type_is_aperture = (tmp >> 7) & 0x01;
         spad_count = (byte) (tmp & 0x7f);
-        spad_type_is_aperture = ((tmp >> 7) & 0x01) == 0 ? false : true;
+        spad_type_is_aperture = ((tmp >> 7) & 0x01) != 0;
 
         writeReg(0x81, 0x00);
         writeReg(0xFF, 0x06);
@@ -666,11 +666,11 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
         return budget_us;
     }
 
-    protected class SequenceStepEnables {
+    protected static class SequenceStepEnables {
         boolean tcc, msrc, dss, pre_range, final_range;
     }
 
-    protected class SequenceStepTimeouts {
+    protected static class SequenceStepTimeouts {
         int pre_range_vcsel_period_pclks, final_range_vcsel_period_pclks;
 
         int msrc_dss_tcc_mclks, pre_range_mclks, final_range_mclks;
@@ -682,11 +682,11 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
     protected void getSequenceStepEnables(SequenceStepEnables enables) {
         int sequence_config = readReg(SYSTEM_SEQUENCE_CONFIG);
 
-        enables.tcc = ((sequence_config >> 4) & 0x1) !=0 ? true : false;
-        enables.dss = ((sequence_config >> 3) & 0x1) != 0 ? true : false;
-        enables.msrc = ((sequence_config >> 2) & 0x1) != 0 ? true : false;
-        enables.pre_range = ((sequence_config >> 6) & 0x1) != 0 ? true : false;
-        enables.final_range = ((sequence_config >> 7) & 0x1) != 0 ? true : false;
+        enables.tcc = ((sequence_config >> 4) & 0x1) != 0;
+        enables.dss = ((sequence_config >> 3) & 0x1) != 0;
+        enables.msrc = ((sequence_config >> 2) & 0x1) != 0;
+        enables.pre_range = ((sequence_config >> 6) & 0x1) != 0;
+        enables.final_range = ((sequence_config >> 7) & 0x1) != 0;
     }
 
 
@@ -721,7 +721,6 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
                 timeoutMclksToMicroseconds(timeouts.final_range_mclks,
                         timeouts.final_range_vcsel_period_pclks);
     }
-
     // Decode sequence step timeout in MCLKs from register value
     // based on VL53L0X_decode_timeout()
     // Note: the original function returned a uint32_t, but the return value is
@@ -775,7 +774,7 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
     // factor of N decreases the range measurement standard deviation by a factor of
     // sqrt(N). Defaults to about 33 milliseconds; the minimum is 20 ms.
     // based on VL53L0X_set_measurement_timing_budget_micro_seconds()
-    protected boolean setMeasurementTimingBudget(long budget_us) {
+    protected void setMeasurementTimingBudget(long budget_us) {
         SequenceStepEnables enables = new SequenceStepEnables();
         SequenceStepTimeouts timeouts = new SequenceStepTimeouts();
 
@@ -790,7 +789,7 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
         final long MinTimingBudget = 20000;
 
         if (budget_us < MinTimingBudget) {
-            return false;
+            return;
         }
 
         long used_budget_us = StartOverhead + EndOverhead;
@@ -823,7 +822,7 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
 
             if (used_budget_us > budget_us) {
                 // "Requested timeout too big."
-                return false;
+                return;
             }
 
             long final_range_timeout_us = budget_us - used_budget_us;
@@ -851,7 +850,6 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
 
             measurement_timing_budget_us = budget_us; // store for internal reuse
         }
-        return true;
     }
 
     // Convert sequence step timeout from microseconds to MCLKs with given VCSEL period in PCLKs
@@ -874,12 +872,12 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
         if (timeout_mclks > 0) {
             ls_byte = timeout_mclks - 1;
 
-            while ((ls_byte & 0xFFFFFF00) > 0) {
+            while ((ls_byte & 0xFFFFFF00L) > 0) {
                 ls_byte >>= 1;
                 ms_byte++;
             }
 
-            return (ms_byte << 8) | (ls_byte & 0xFF);
+            return ((long) ms_byte << 8) | (ls_byte & 0xFF);
         } else {
             return 0;
         }
@@ -957,7 +955,7 @@ public class Vl53L50X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Di
         writeReg(0xFF, 0x00);
     }
 
-    protected void setTimeout(int timeout) { io_timeout = timeout; }
+    protected void setTimeout() { io_timeout = 200; }
     protected int  getTimeout() { return io_timeout; }
 
     // Returns a range reading in millimeters when continuous mode is active
